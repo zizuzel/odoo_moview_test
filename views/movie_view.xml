@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_movie_form" model="ir.ui.view">
+            <field name="name">movie.form</field>
+            <field name="model">movie</field>
+            <field name="arch" type="xml">
+                <form string="Фильм">
+                    <sheet>
+                        <label for="name" string="Название фильма:"/>
+                        <h2><field name="name" nolabel="1"/></h2>
+                        <group col="3">
+                            <group colspan="1" style="margin-right: 10px;">
+                                <field name="fieldtoupload"/>
+                                <field name="poster" widget="image" nolabel="1" class="poster"/>
+                            </group>
+                            <group colspan="2">
+                                <field name="year"/>
+                                <field name="country"/>
+                                <field name="rating_kp"/>
+                                <field name="rating_imdb"/>
+                            </group>
+                        </group>
+                        <div class="modal" tabindex="-1" role="dialog" id="select_movie">
+                            <div class="modal-dialog" id="select_movie_body" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Выберите фильм</h5>
+                                            <button class="close" data-dismiss="modal" aria-label="Close" name="close">
+                                                <i class="searchfilm fa fa-close"></i>
+                                            </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="search_panel">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control searchinput" 
+                                                       placeholder="Введите название фильма или его часть и нажмите кнопу 'Поиск'"/>
+                                                    <button name="search" class="btn btn-default" onclick="get_movie_list(this)"
+                                                            style="border: 1px solid black;">
+                                                        <i class="searchfilm fa fa-search"></i>
+                                                    </button>
+                                            </div>
+                                        </div>
+                                        <div class="movielistdiv" style="display: none;">
+                                            <h6>Список доступных фильмов</h6>
+                                            <ul class="list-group movielist" id="movielist"></ul>
+                                        </div>
+                                    <div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center myspinner" style="display:none;">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    </sheet>
+                        <script type="text/javascript">
+                            if (!$('input[name="name"]').val() &#38;&#38; $('input[name="name"]').val() !== undefined) {
+                                $('#select_movie').css("display", "block");
+                            }
+                            $('textarea[name="fieldtoupload"]').closest("tr").css("display", "none");
+                            $('span[name="fieldtoupload"]').closest("tr").css("display", "none");
+                            $(document).on('click', 'button.close', function () {
+                                $('#select_movie').css("display", "none");
+                            });
+                            window.onclick = function(event) {
+                                if(!$(event.target).closest('#select_movie_body').length &#38;&#38; !$(event.target).is('#select_movie_body')) {
+                                    $('#select_movie').css("display", "none");
+                                }
+                            }
+                        </script>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_movie_list" model="ir.ui.view">
+            <field name="name">movie.list</field>
+            <field name="model">movie</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="year"/>
+                    <field name="country"/>
+                    <field name="rating_kp"/>
+                    <field name="rating_imdb"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="movie_kanban_view">
+            <field name="name">movie.kanban</field>
+            <field name="model">movie</field>
+            <field name="arch" type="xml">
+                <kanban class="o_res_partner_kanban" sample="1">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="country"/>
+                    <field name="year"/>
+                    <field name="rating_kp"/>
+                    <field name="rating_imdb"/>
+                    <field name="poster"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                                <div class="o_kanban_image_fill_left o_kanban_image_full" t-attf-style="background-image: url(#{kanban_image('movie', 'poster', record.id.raw_value)})" role="img"/>
+                                <div class="oe_kanban_details d-flex flex-column">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                    <div class="o_kanban_tags_section oe_kanban_partner_categories"/>
+                                    <ul>
+                                        <li><field name="year"/> (<field name="country"/>)</li>
+                                    </ul>
+                                    <u>Рейтинги</u>
+                                    <ul>
+                                        <li>Kinopoisk: <field name="rating_kp"/></li>
+                                        <li>IMDB:<field name="rating_imdb"/></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                 </kanban>
+            </field>
+        </record>
+
+        <record id="action_movie" model="ir.actions.act_window">
+            <field name="name">Фильмы</field>
+            <field name="res_model">movie</field>
+            <field name="view_mode">kanban,form,tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Добавьте новый фильм
+                </p>
+            </field>
+        </record>
+
+
+        <record id="view_movie_view_form" model="ir.ui.view">
+            <field name="name">movie.view.form</field>
+            <field name="model">movie.view</field>
+            <field name="arch" type="xml">
+                <form string="Просмотры">
+                  <sheet>
+                    <group col="2">
+                        <group>
+                            <field name="company_id"/>
+                            <field name="movie_id"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="priority" widget="priority"/>
+                        </group>
+                    </group>
+                  </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_movie_view_list" model="ir.ui.view">
+            <field name="name">movie.view.list</field>
+            <field name="model">movie.view</field>
+            <field name="arch" type="xml">
+                <tree string="Просмотры">
+                    <field name="company_id"/>
+                    <field name="movie_id"/>
+                    <field name="partner_id"/>
+                    <field name="date"/>
+                    <field name="priority" widget="priority"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_movie_view" model="ir.actions.act_window">
+            <field name="name">Просмотры</field>
+            <field name="res_model">movie.view</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('company_id', '=', allowed_company_ids[0])]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Добавьте новый просмотр
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

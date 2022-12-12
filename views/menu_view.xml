@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem name="Test Task" id="menu_test_root" sequence="0"/>
+        <menuitem name="Фильмы" id="menu_film" action="action_movie" sequence="0"/>
+        <menuitem name="Кинотеатры" id="menu_cinema" action="action_cinema" sequence="1"/>
+        <menuitem name="Просмотры" id="menu_film_view" action="action_movie_view" sequence="2"/>
+</odoo>

@@ -1,0 +1,17 @@
+i.searchfilm {
+    width: 50px;
+}
+li.movie {
+    cursor: pointer;
+}
+li.movie:hover {
+    background-color: lightgray;
+}
+div.search_panel {
+    margin-bottom: 10px;
+}
+div.myspinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
